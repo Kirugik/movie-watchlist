@@ -23,7 +23,7 @@ class Movie:
         self.vote_count = vote_count 
 
 
-class Review((db.Model)):
+class Review:
 
     all_reviews = []
 
@@ -53,17 +53,6 @@ class Review((db.Model)):
                 response.append(review)
 
         return response
-
-    
-    __tablename__ = 'reviews' 
-
-    id = db.Column(db.Integer,primary_key = True)
-    movie_id = db.Column(db.Integer)
-    movie_title = db.Column(db.String)
-    image_path = db.Column(db.String)
-    movie_review = db.Column(db.String)
-    posted = db.Column(db.DateTime,default=datetime.utcnow)
-    user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
     
 
 
@@ -102,3 +91,27 @@ class Role(db.Model):
 
     def __repr__(self):
         return f'User {self.name}'  
+
+
+
+class Review(db.Model):
+
+    __tablename__ = 'reviews'
+
+    id = db.Column(db.Integer,primary_key = True)
+    movie_id = db.Column(db.Integer)
+    movie_title = db.Column(db.String)
+    image_path = db.Column(db.String)
+    movie_review = db.Column(db.String)
+    posted = db.Column(db.DateTime,default=datetime.utcnow)
+    user_id = db.Column(db.Integer,db.ForeignKey("users.id"))
+
+
+    def save_review(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    @classmethod
+    def get_reviews(cls,id):
+        reviews = Review.query.filter_by(movie_id=id).all()
+        return reviews
